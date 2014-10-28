@@ -17,7 +17,17 @@ namespace PlanningPokerConsole
             using (var client = new System.Net.WebClient())
                 responseBuffer = client.UploadData(url, getMethodString(method), buffer);
 
-            return JObject.Parse(Encoding.UTF8.GetString(responseBuffer));
+            var json = JObject.Parse(Encoding.UTF8.GetString(responseBuffer));
+
+            JToken successObj = json["success"] as JValue;
+            if (successObj == null)
+                throw new ApplicationException("No success property in returned json.");
+
+            var success = successObj.Value<bool>();
+            if (!success)
+                throw new ApplicationException("Request error: " + json["message"]);
+
+            return json;
         }
 
         private static string getMethodString(RequestMethods method)
