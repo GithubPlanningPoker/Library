@@ -11,13 +11,12 @@ namespace PlanningPokerConsole
     {
         public static JObject Request(string url, RequestMethods method, JObject data)
         {
-            byte[] buffer = Encoding.UTF8.GetBytes(data.ToString());
-            byte[] responseBuffer;
-
-            using (var client = new System.Net.WebClient())
-                responseBuffer = client.UploadData(url, getMethodString(method), buffer);
-
-            var json = JObject.Parse(Encoding.UTF8.GetString(responseBuffer));
+            return Request(url, method, data.ToString());
+        }
+        public static JObject Request(string url, RequestMethods method, string data)
+        {
+            byte[] response = getReponse(url, method, data);
+            var json = JObject.Parse(Encoding.UTF8.GetString(response));
 
             JToken successObj = json["success"] as JValue;
             if (successObj == null)
@@ -28,6 +27,10 @@ namespace PlanningPokerConsole
                 throw new ApplicationException("Request error: " + json["message"]);
 
             return json;
+        }
+        public static JObject Request(string url, RequestMethods method)
+        {
+            return Request(url, method, (string)null);
         }
 
         private static string getMethodString(RequestMethods method)
@@ -41,6 +44,30 @@ namespace PlanningPokerConsole
                 default:
                     throw new ArgumentException("Unknown request method.");
             }
+        }
+        private static byte[] getReponse(string url, RequestMethods method, string data)
+        {
+            byte[] buffer = data == null ? new byte[0] : Encoding.UTF8.GetBytes(data);
+            byte[] responseBuffer = new byte[0];
+
+            using (var client = new System.Net.WebClient())
+            {
+                switch (method)
+                {
+                    case RequestMethods.GET:
+                        responseBuffer = client.DownloadData(url);
+                        break;
+
+                    case RequestMethods.PUT:
+                    case RequestMethods.POST:
+                    case RequestMethods.DELETE:
+                        client.Headers.Add("Content-Type", "application/json");
+                        responseBuffer = client.UploadData(url, getMethodString(method), buffer);
+                        break;
+                }
+            }
+
+            return responseBuffer;
         }
     }
 }
