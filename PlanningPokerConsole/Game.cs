@@ -58,5 +58,26 @@ namespace PlanningPokerConsole
         {
             get { return user; }
         }
+
+        public string Description
+        {
+            get
+            {
+                var json = JsonRequestHandler.Request("/game/" + id.Hash + "/description/", RequestMethods.GET);
+                return json["description"].Value<string>();
+            }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("value");
+
+                if (value == string.Empty)
+                    JsonRequestHandler.Request("/game/" + id.Hash + "/description/", RequestMethods.DELETE,
+                        "{ \"userid\" : \"" + user.Id.Hash + "\" }");
+                else
+                    JsonRequestHandler.Request("/game/" + id.Hash + "/description/", RequestMethods.PUT,
+                        "{ \"description\" : \"" + value.Replace("\"", "\\\"") + "\", \"userid\" : \"" + user.Id.Hash + "\" }");
+            }
+        }
     }
 }
