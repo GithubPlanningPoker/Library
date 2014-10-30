@@ -31,7 +31,8 @@ namespace PlanningPokerConsole
         {
             JsonRequestHandler handler = new JsonRequestHandler(domainURL);
 
-            var json = handler.Request("/game/" + gameid.Hash + "/user/", RequestMethods.POST, "{ \"name\" : \"" + username + "\" }");
+            string request = string.Format("/game/{0}/user/", gameid.Hash);
+            var json = handler.Request(request, RequestMethods.POST, "{ \"name\" : \"" + username + "\" }");
             User user = new User(username, new Id(json["userid"].Value<string>()));
 
             return new Game(false, gameid, user, handler);
@@ -73,7 +74,8 @@ namespace PlanningPokerConsole
         {
             get
             {
-                var json = jsonReq.Request("/game/" + id.Hash + "/description/", RequestMethods.GET);
+                string request = string.Format("/game/{0}/description/", id.Hash);
+                var json = jsonReq.Request(request, RequestMethods.GET);
                 return json["description"].Value<string>();
             }
             set
@@ -81,18 +83,18 @@ namespace PlanningPokerConsole
                 if (value == null)
                     throw new ArgumentNullException("value");
 
+                string request = string.Format("/game/{0}/description/", id.Hash);
                 if (value == string.Empty)
-                    jsonReq.Request("/game/" + id.Hash + "/description/", RequestMethods.DELETE,
-                        "{ \"userid\" : \"" + user.Id.Hash + "\" }");
+                    jsonReq.Request(request, RequestMethods.DELETE, "{ \"userid\" : \"" + user.Id.Hash + "\" }");
                 else
-                    jsonReq.Request("/game/" + id.Hash + "/description/", RequestMethods.PUT,
-                        "{ \"description\" : \"" + value.Replace("\"", "\\\"") + "\", \"userid\" : \"" + user.Id.Hash + "\" }");
+                    jsonReq.Request(request, RequestMethods.PUT, "{ \"description\" : \"" + value.Replace("\"", "\\\"") + "\", \"userid\" : \"" + user.Id.Hash + "\" }");
             }
         }
 
         public void Vote(VoteTypes voteType)
         {
-            jsonReq.Request("/game/" + id.Hash + "/vote/" + user.Id.Hash + "/", RequestMethods.POST, "{ \"vote\" : \"" + voteType.ToAPIString() + "\" }");
+            string request = string.Format("/game/{0}/vote/{1}/", id.Hash, user.Id.Hash);
+            jsonReq.Request(request, RequestMethods.POST, "{ \"vote\" : \"" + voteType.ToAPIString() + "\" }");
         }
     }
 }
