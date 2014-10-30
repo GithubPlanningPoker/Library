@@ -96,5 +96,32 @@ namespace PlanningPokerConsole
             string request = string.Format("/game/{0}/vote/{1}/", id.Hash, user.Id.Hash);
             jsonReq.Request(request, RequestMethods.POST, "{ \"vote\" : \"" + voteType.ToAPIString() + "\" }");
         }
+
+        public IEnumerable<KeyValuePair<User, VoteTypes>> GetVotes()
+        {
+            string request = string.Format("/game/{0}/vote/", id.Hash);
+            var json = jsonReq.Request(request, RequestMethods.GET);
+
+            var votes = json["votes"] as JArray;
+            foreach (var i in votes)
+            {
+                string username = i["name"].Value<string>();
+                string voteStr = i["vote"].Value<string>();
+
+                yield return new KeyValuePair<User, VoteTypes>(new User(username), VoteTypesExtension.Parse(voteStr));
+            }
+        }
+
+        public void ClearVotes()
+        {
+            string request = string.Format("/game/{0}/vote/", id.Hash);
+            jsonReq.Request(request, RequestMethods.DELETE, "{ \"userid\" : \"" + user.Id.Hash + "\" }");
+        }
+
+        public void ResetGame()
+        {
+            Description = "";
+            ClearVotes();
+        }
     }
 }
