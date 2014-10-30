@@ -48,5 +48,28 @@ namespace PlanningPokerConsole
                     throw new ArgumentException("Unknown vote type.");
             }
         }
+
+        public static VoteTypes Parse(string input)
+        {
+            switch (input)
+            {
+                case "0": return VoteTypes.Zero;
+                case "half": return VoteTypes.Half;
+                case "1": return VoteTypes.One;
+                case "2": return VoteTypes.Two;
+                case "3": return VoteTypes.Three;
+                case "5": return VoteTypes.Five;
+                case "8": return VoteTypes.Eight;
+                case "13": return VoteTypes.Thirteen;
+                case "20": return VoteTypes.Twenty;
+                case "40": return VoteTypes.Fourty;
+                case "100": return VoteTypes.OneHundred;
+                case "inf": return VoteTypes.Infinite;
+                case "?": return VoteTypes.QuestionMark;
+                case "break": return VoteTypes.Break;
+                default:
+                    throw new ArgumentException("Unknown vote type.");
+            }
+        }
     }
 }
