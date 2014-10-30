@@ -89,5 +89,10 @@ namespace PlanningPokerConsole
                         "{ \"description\" : \"" + value.Replace("\"", "\\\"") + "\", \"userid\" : \"" + user.Id.Hash + "\" }");
             }
         }
+
+        public void Vote(VoteTypes voteType)
+        {
+            jsonReq.Request("/game/" + id.Hash + "/vote/" + user.Id.Hash + "/", RequestMethods.POST, "{ \"vote\" : \"" + voteType.ToAPIString() + "\" }");
+        }
     }
 }
