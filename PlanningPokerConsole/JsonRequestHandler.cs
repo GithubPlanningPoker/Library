@@ -7,15 +7,22 @@ using System.Threading.Tasks;
 
 namespace PlanningPokerConsole
 {
-    public static class JsonRequestHandler
+    public class JsonRequestHandler
     {
-        public static JObject Request(string url, RequestMethods method, JObject data)
+        private readonly string rootURL;
+
+        public JsonRequestHandler(string rootURL)
+        {
+            this.rootURL = rootURL.TrimEnd('/');
+        }
+
+        public JObject Request(string url, RequestMethods method, JObject data)
         {
             return Request(url, method, data.ToString());
         }
-        public static JObject Request(string url, RequestMethods method, string data)
+        public JObject Request(string url, RequestMethods method, string data)
         {
-            byte[] response = getReponse(url, method, data);
+            byte[] response = getReponse(rootURL + url, method, data);
             var json = JObject.Parse(Encoding.UTF8.GetString(response));
 
             JToken successObj = json["success"] as JValue;
@@ -28,12 +35,12 @@ namespace PlanningPokerConsole
 
             return json;
         }
-        public static JObject Request(string url, RequestMethods method)
+        public JObject Request(string url, RequestMethods method)
         {
             return Request(url, method, (string)null);
         }
 
-        private static string getMethodString(RequestMethods method)
+        private string getMethodString(RequestMethods method)
         {
             switch (method)
             {
@@ -45,7 +52,7 @@ namespace PlanningPokerConsole
                     throw new ArgumentException("Unknown request method.");
             }
         }
-        private static byte[] getReponse(string url, RequestMethods method, string data)
+        private byte[] getReponse(string url, RequestMethods method, string data)
         {
             byte[] buffer = data == null ? new byte[0] : Encoding.UTF8.GetBytes(data);
             byte[] responseBuffer = new byte[0];

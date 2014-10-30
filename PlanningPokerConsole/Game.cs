@@ -9,29 +9,35 @@ namespace PlanningPokerConsole
 {
     public class Game
     {
-        private bool host;
+        private readonly bool host;
         private readonly Id id;
         private readonly User user;
 
-        public static Game CreateGame(string username)
+        private readonly JsonRequestHandler jsonReq;
+
+        public static Game CreateGame(string domainURL, string username)
         {
-            var json = JsonRequestHandler.Request("/game/", RequestMethods.POST, "{ \"name\" : \"" + username + "\" }");
+            JsonRequestHandler handler = new JsonRequestHandler(domainURL);
+
+            var json = handler.Request("/game/", RequestMethods.POST, "{ \"name\" : \"" + username + "\" }");
 
             Id gameid = new Id(json["gameid"].Value<string>());
             User user = new User(username, new Id(json["userid"].Value<string>()));
 
-            return new Game(true, gameid, user);
+            return new Game(true, gameid, user, handler);
         }
 
-        public static Game JoinGame(Id gameid, string username)
+        public static Game JoinGame(string domainURL, Id gameid, string username)
         {
-            var json = JsonRequestHandler.Request("/game/" + gameid.Hash + "/user/", RequestMethods.POST, "{ \"name\" : \"" + username + "\" }");
+            JsonRequestHandler handler = new JsonRequestHandler(domainURL);
+
+            var json = handler.Request("/game/" + gameid.Hash + "/user/", RequestMethods.POST, "{ \"name\" : \"" + username + "\" }");
             User user = new User(username, new Id(json["userid"].Value<string>()));
 
-            return new Game(false, gameid, user);
+            return new Game(false, gameid, user, handler);
         }
 
-        private Game(bool host, Id id, User user)
+        private Game(bool host, Id id, User user, JsonRequestHandler jsonRequestHandler)
         {
             this.host = host;
 
@@ -42,6 +48,10 @@ namespace PlanningPokerConsole
             if (user == null)
                 throw new ArgumentNullException("user");
             this.user = user;
+
+            if (jsonRequestHandler == null)
+                throw new ArgumentNullException("jsonRequestHandler");
+            this.jsonReq = jsonRequestHandler;
         }
 
         public bool Host
@@ -63,7 +73,7 @@ namespace PlanningPokerConsole
         {
             get
             {
-                var json = JsonRequestHandler.Request("/game/" + id.Hash + "/description/", RequestMethods.GET);
+                var json = jsonReq.Request("/game/" + id.Hash + "/description/", RequestMethods.GET);
                 return json["description"].Value<string>();
             }
             set
@@ -72,10 +82,10 @@ namespace PlanningPokerConsole
                     throw new ArgumentNullException("value");
 
                 if (value == string.Empty)
-                    JsonRequestHandler.Request("/game/" + id.Hash + "/description/", RequestMethods.DELETE,
+                    jsonReq.Request("/game/" + id.Hash + "/description/", RequestMethods.DELETE,
                         "{ \"userid\" : \"" + user.Id.Hash + "\" }");
                 else
-                    JsonRequestHandler.Request("/game/" + id.Hash + "/description/", RequestMethods.PUT,
+                    jsonReq.Request("/game/" + id.Hash + "/description/", RequestMethods.PUT,
                         "{ \"description\" : \"" + value.Replace("\"", "\\\"") + "\", \"userid\" : \"" + user.Id.Hash + "\" }");
             }
         }
