@@ -97,7 +97,7 @@ namespace PlanningPokerConsole
             jsonReq.Request(request, RequestMethods.POST, "{ \"vote\" : \"" + voteType.ToAPIString() + "\" }");
         }
 
-        public IEnumerable<KeyValuePair<User, VoteTypes>> GetVotes()
+        public IEnumerable<KeyValuePair<User, VoteTypes?>> GetVotes()
         {
             string request = string.Format("/game/{0}/vote/", id.Hash);
             var json = jsonReq.Request(request, RequestMethods.GET);
@@ -108,7 +108,7 @@ namespace PlanningPokerConsole
                 string username = i["name"].Value<string>();
                 string voteStr = i["vote"].Value<string>();
 
-                yield return new KeyValuePair<User, VoteTypes>(new User(username), VoteTypesExtension.Parse(voteStr));
+                yield return new KeyValuePair<User, VoteTypes?>(new User(username), VoteTypesExtension.Parse(voteStr));
             }
         }
 

@@ -49,8 +49,11 @@ namespace PlanningPokerConsole
             }
         }
 
-        public static VoteTypes Parse(string input)
+        public static VoteTypes? Parse(string input)
         {
+            if (input == null)
+                return null;
+
             switch (input)
             {
                 case "0": return VoteTypes.Zero;
