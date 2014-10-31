@@ -97,8 +97,7 @@ namespace PlanningPokerConsole
         {
             get
             {
-                if (lastVotes == null)
-                    UpdateVotes();
+                UpdateVotes();
 
                 return lastVotes.ToArray();
             }
