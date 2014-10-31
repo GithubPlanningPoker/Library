@@ -15,6 +15,8 @@ namespace PlanningPokerConsole
 
         private readonly JsonRequestHandler jsonReq;
 
+        private Dictionary<User, VoteTypes?> lastVotes;
+
         public static Game CreateGame(string domainURL, string username)
         {
             JsonRequestHandler handler = new JsonRequestHandler(domainURL);
@@ -91,16 +93,34 @@ namespace PlanningPokerConsole
             }
         }
 
+        public KeyValuePair<User, VoteTypes?>[] Votes
+        {
+            get
+            {
+                if (lastVotes == null)
+                    UpdateVotes();
+
+                return lastVotes.ToArray();
+            }
+        }
+
         public void Vote(VoteTypes voteType)
         {
             string request = string.Format("/game/{0}/vote/{1}/", id.Hash, user.Id.Hash);
             jsonReq.Request(request, RequestMethods.POST, "{ \"vote\" : \"" + voteType.ToAPIString() + "\" }");
+
+            UpdateVotes();
         }
 
-        public IEnumerable<KeyValuePair<User, VoteTypes?>> GetVotes()
+        public IEnumerable<KeyValuePair<User, VoteTypes?>> UpdateVotes()
         {
             string request = string.Format("/game/{0}/vote/", id.Hash);
             var json = jsonReq.Request(request, RequestMethods.GET);
+
+            if (lastVotes != null)
+                lastVotes.Clear();
+            else
+                lastVotes = new Dictionary<PlanningPokerConsole.User, VoteTypes?>();
 
             var votes = json["votes"] as JArray;
             foreach (var i in votes)
@@ -108,8 +128,10 @@ namespace PlanningPokerConsole
                 string username = i["name"].Value<string>();
                 string voteStr = i["vote"].Value<string>();
 
-                yield return new KeyValuePair<User, VoteTypes?>(new User(username), VoteTypesExtension.Parse(voteStr));
+                lastVotes.Add(new User(username), VoteTypesExtension.Parse(voteStr));
             }
+
+            return Votes;
         }
 
         public void ClearVotes()
