@@ -15,8 +15,6 @@ namespace PlanningPokerConsole
 
         private readonly JsonRequestHandler jsonReq;
 
-        private Dictionary<User, VoteTypes?> lastVotes;
-
         public static Game CreateGame(string domainURL, string username)
         {
             JsonRequestHandler handler = new JsonRequestHandler(domainURL);
@@ -97,9 +95,26 @@ namespace PlanningPokerConsole
         {
             get
             {
-                UpdateVotes();
+                Dictionary<User, VoteTypes?> votes = new Dictionary<PlanningPokerConsole.User, VoteTypes?>();
 
-                return lastVotes.ToArray();
+                string request = string.Format("/game/{0}/vote/", id.Hash);
+                var json = jsonReq.Request(request, RequestMethods.GET);
+
+                if (votes != null)
+                    votes.Clear();
+                else
+                    votes = new Dictionary<PlanningPokerConsole.User, VoteTypes?>();
+
+                var jvotes = json["votes"] as JArray;
+                foreach (var i in jvotes)
+                {
+                    string username = i["name"].Value<string>();
+                    string voteStr = i["vote"].Value<string>();
+
+                    votes.Add(new User(username), VoteTypesExtension.Parse(voteStr));
+                }
+
+                return votes.ToArray();
             }
         }
 
@@ -107,30 +122,6 @@ namespace PlanningPokerConsole
         {
             string request = string.Format("/game/{0}/vote/{1}/", id.Hash, user.Id.Hash);
             jsonReq.Request(request, RequestMethods.POST, "{ \"vote\" : \"" + voteType.ToAPIString() + "\" }");
-
-            UpdateVotes();
-        }
-
-        public IEnumerable<KeyValuePair<User, VoteTypes?>> UpdateVotes()
-        {
-            string request = string.Format("/game/{0}/vote/", id.Hash);
-            var json = jsonReq.Request(request, RequestMethods.GET);
-
-            if (lastVotes != null)
-                lastVotes.Clear();
-            else
-                lastVotes = new Dictionary<PlanningPokerConsole.User, VoteTypes?>();
-
-            var votes = json["votes"] as JArray;
-            foreach (var i in votes)
-            {
-                string username = i["name"].Value<string>();
-                string voteStr = i["vote"].Value<string>();
-
-                lastVotes.Add(new User(username), VoteTypesExtension.Parse(voteStr));
-            }
-
-            return Votes;
         }
 
         public void ClearVotes()
