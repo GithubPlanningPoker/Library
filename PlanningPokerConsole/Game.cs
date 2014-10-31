@@ -87,7 +87,7 @@ namespace PlanningPokerConsole
                 if (value == string.Empty)
                     jsonReq.Request(request, RequestMethods.DELETE, "{ \"userid\" : \"" + user.Id.Hash + "\" }");
                 else
-                    jsonReq.Request(request, RequestMethods.PUT, "{ \"description\" : \"" + value.Replace("\"", "\\\"") + "\", \"userid\" : \"" + user.Id.Hash + "\" }");
+                    jsonReq.Request(request, RequestMethods.POST, "{ \"description\" : \"" + value.Replace("\"", "\\\"") + "\", \"userid\" : \"" + user.Id.Hash + "\" }");
             }
         }
 
