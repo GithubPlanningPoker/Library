@@ -38,5 +38,10 @@ namespace PlanningPokerConsole
         {
             get { return name; }
         }
+
+        public override string ToString()
+        {
+            return name;
+        }
     }
 }
