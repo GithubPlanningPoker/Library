@@ -25,5 +25,13 @@ namespace Library
         {
             get { return votetype; }
         }
+
+        public override string ToString()
+        {
+            if (!votetype.HasValue)
+                return string.Format("{0}: No vote", name);
+            else
+                return string.Format("{0}: {1}", name, votetype.Value.ToAPIString());
+        }
     }
 }
