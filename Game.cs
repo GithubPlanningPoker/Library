@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PlanningPokerConsole
+namespace Library
 {
     public class Game
     {
@@ -95,7 +95,7 @@ namespace PlanningPokerConsole
         {
             get
             {
-                Dictionary<User, VoteTypes?> votes = new Dictionary<PlanningPokerConsole.User, VoteTypes?>();
+                Dictionary<User, VoteTypes?> votes = new Dictionary<Library.User, VoteTypes?>();
 
                 string request = string.Format("/game/{0}/vote/", id.Hash);
                 var json = jsonReq.Request(request, RequestMethods.GET);
@@ -103,7 +103,7 @@ namespace PlanningPokerConsole
                 if (votes != null)
                     votes.Clear();
                 else
-                    votes = new Dictionary<PlanningPokerConsole.User, VoteTypes?>();
+                    votes = new Dictionary<Library.User, VoteTypes?>();
 
                 var jvotes = json["votes"] as JArray;
                 foreach (var i in jvotes)

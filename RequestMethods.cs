@@ -1,4 +1,4 @@
-﻿namespace PlanningPokerConsole
+﻿namespace Library
 {
     public enum RequestMethods
     {

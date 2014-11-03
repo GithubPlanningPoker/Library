@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PlanningPokerConsole
+namespace Library
 {
     public class Id
     {

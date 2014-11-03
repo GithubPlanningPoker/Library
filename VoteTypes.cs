@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PlanningPokerConsole
+namespace Library
 {
     public enum VoteTypes
     {//0, half, 1, 2, 3, 5, 8, 13, 20, 40, 100, inf, ?, break
