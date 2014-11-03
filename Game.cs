@@ -91,30 +91,24 @@ namespace Library
             }
         }
 
-        public KeyValuePair<User, VoteTypes?>[] Votes
+        public Vote[] Votes
         {
             get
             {
-                Dictionary<User, VoteTypes?> votes = new Dictionary<Library.User, VoteTypes?>();
-
                 string request = string.Format("/game/{0}/vote/", id.Hash);
                 var json = jsonReq.Request(request, RequestMethods.GET);
 
-                if (votes != null)
-                    votes.Clear();
-                else
-                    votes = new Dictionary<Library.User, VoteTypes?>();
-
                 var jvotes = json["votes"] as JArray;
-                foreach (var i in jvotes)
+                Vote[] votes = new Vote[jvotes.Count];
+                for (int i = 0; i < jvotes.Count; i++)
                 {
-                    string username = i["name"].Value<string>();
-                    string voteStr = i["vote"].Value<string>();
+                    string username = jvotes[i]["name"].Value<string>();
+                    string voteStr = jvotes[i]["vote"].Value<string>();
 
-                    votes.Add(new User(username), VoteTypesExtension.Parse(voteStr));
+                    votes[i] = new Vote(username, VoteTypesExtension.Parse(voteStr));
                 }
 
-                return votes.ToArray();
+                return votes;
             }
         }
 
