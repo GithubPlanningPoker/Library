@@ -9,12 +9,21 @@ namespace Library
     public class Vote
     {
         private string name;
-        private VoteTypes? votetype;
+        private VoteTypes votetype;
+        private bool hasvoted;
 
-        public Vote(string name, VoteTypes? votetype)
+        public Vote(string name, VoteTypes votetype)
         {
             this.name = name;
             this.votetype = votetype;
+            this.hasvoted = true;
+        }
+
+        public Vote(string name, bool hasvoted)
+        {
+            this.name = name;
+            this.votetype = default(VoteTypes);
+            this.hasvoted = hasvoted;
         }
 
         public string Name
@@ -25,13 +34,17 @@ namespace Library
         {
             get { return votetype; }
         }
+        public bool HasVoted
+        {
+            get { return hasvoted; }
+        }
 
         public override string ToString()
         {
-            if (!votetype.HasValue)
+            if (!hasvoted)
                 return string.Format("{0}: No vote", name);
             else
-                return string.Format("{0}: {1}", name, votetype.Value.ToAPIString());
+                return string.Format("{0}: {1}", name, votetype.ToAPIString());
         }
     }
 }
