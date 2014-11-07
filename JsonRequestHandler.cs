@@ -16,11 +16,11 @@ namespace Library
             this.rootURL = rootURL.TrimEnd('/');
         }
 
-        public JObject Request(string url, RequestMethods method, JObject data)
+        public JObject Request(string url, RequestMethods method, JObject data, bool ignoreError = false)
         {
-            return Request(url, method, data.ToString());
+            return Request(url, method, data.ToString(), ignoreError);
         }
-        public JObject Request(string url, RequestMethods method, string data)
+        public JObject Request(string url, RequestMethods method, string data, bool ignoreError = false)
         {
             byte[] response = getReponse(rootURL + url, method, data);
             var json = JObject.Parse(Encoding.UTF8.GetString(response));
@@ -29,15 +29,18 @@ namespace Library
             if (successObj == null)
                 throw new ApplicationException("No success property in returned json.");
 
-            var success = successObj.Value<bool>();
-            if (!success)
-                throw new ApplicationException("Request error: " + json["message"]);
+            if (!ignoreError)
+            {
+                var success = successObj.Value<bool>();
+                if (!success)
+                    throw new ApplicationException("Request error: " + json["message"]);
+            }
 
             return json;
         }
-        public JObject Request(string url, RequestMethods method)
+        public JObject Request(string url, RequestMethods method, bool ignoreError = false)
         {
-            return Request(url, method, (string)null);
+            return Request(url, method, (string)null, ignoreError);
         }
 
         private string getMethodString(RequestMethods method)
