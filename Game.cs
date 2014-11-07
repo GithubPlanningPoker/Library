@@ -69,12 +69,10 @@ namespace Library
         {
             get { return host; }
         }
-
         public Id Id
         {
             get { return id; }
         }
-
         public User User
         {
             get { return user; }
@@ -102,6 +100,11 @@ namespace Library
             }
         }
 
+        public void Kick(string username)
+        {
+            string request = string.Format("/game/[gameid]/user/[username]/", id.Hash, username);
+            jsonReq.Request(request, RequestMethods.DELETE, new JObject(new JProperty("userid", user.Id.Hash)));
+        }
         public Vote[] Votes
         {
             get
@@ -122,7 +125,6 @@ namespace Library
                 return votes;
             }
         }
-
         public void Vote(VoteTypes voteType)
         {
             string request = string.Format("/game/{0}/vote/{1}/", id.Hash, user.Id.Hash);
@@ -131,6 +133,9 @@ namespace Library
 
         public void ClearVotes()
         {
+            if (!Host)
+                throw new InvalidOperationException("Only the host can clear votes.");
+
             string request = string.Format("/game/{0}/vote/", id.Hash);
             jsonReq.Request(request, RequestMethods.DELETE, new JObject(new JProperty("userid", user.Id.Hash)));
         }
