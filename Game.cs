@@ -19,7 +19,7 @@ namespace Library
         {
             JsonRequestHandler handler = new JsonRequestHandler(domainURL);
 
-            var json = handler.Request("/game/", RequestMethods.POST, "{ \"name\" : \"" + username + "\" }");
+            var json = handler.Request("/game/", RequestMethods.POST, new JObject(new JProperty("name", username)));
 
             Id gameid = new Id(json["gameid"].Value<string>());
             User user = new User(username, new Id(json["userid"].Value<string>()));
@@ -32,7 +32,7 @@ namespace Library
             JsonRequestHandler handler = new JsonRequestHandler(domainURL);
 
             string request = string.Format("/game/{0}/user/", gameid.Hash);
-            var json = handler.Request(request, RequestMethods.POST, "{ \"name\" : \"" + username + "\" }");
+            var json = handler.Request(request, RequestMethods.POST, new JObject(new JProperty("name", username)));
             User user = new User(username, new Id(json["userid"].Value<string>()));
 
             return new Game(false, gameid, user, handler);
@@ -84,10 +84,11 @@ namespace Library
                     throw new ArgumentNullException("value");
 
                 string request = string.Format("/game/{0}/description/", id.Hash);
+
                 if (value == string.Empty)
-                    jsonReq.Request(request, RequestMethods.DELETE, "{ \"userid\" : \"" + user.Id.Hash + "\" }");
+                    jsonReq.Request(request, RequestMethods.DELETE, new JObject(new JProperty("userid", user.Id.Hash)));
                 else
-                    jsonReq.Request(request, RequestMethods.POST, "{ \"description\" : \"" + value.Replace("\"", "\\\"") + "\", \"userid\" : \"" + user.Id.Hash + "\" }");
+                    jsonReq.Request(request, RequestMethods.POST, new JObject(new JProperty("description", value), new JProperty("userid", user.Id.Hash)));
             }
         }
 
@@ -115,13 +116,13 @@ namespace Library
         public void Vote(VoteTypes voteType)
         {
             string request = string.Format("/game/{0}/vote/{1}/", id.Hash, user.Id.Hash);
-            jsonReq.Request(request, RequestMethods.POST, "{ \"vote\" : \"" + voteType.ToAPIString() + "\" }");
+            jsonReq.Request(request, RequestMethods.POST, new JObject(new JProperty("vote", voteType.ToAPIString())));
         }
 
         public void ClearVotes()
         {
             string request = string.Format("/game/{0}/vote/", id.Hash);
-            jsonReq.Request(request, RequestMethods.DELETE, "{ \"userid\" : \"" + user.Id.Hash + "\" }");
+            jsonReq.Request(request, RequestMethods.DELETE, new JObject(new JProperty("userid", user.Id.Hash)));
         }
 
         public void ResetGame()
