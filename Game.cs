@@ -38,6 +38,16 @@ namespace Library
             return new Game(false, gameid, user, handler);
         }
 
+        public static bool Exists(string domainURL, Id gameid)
+        {
+            JsonRequestHandler handler = new JsonRequestHandler(domainURL);
+
+            string request = string.Format("/game/{0}/", gameid.Hash);
+            var json = handler.Request(request, RequestMethods.GET);
+
+            return json["success"].Value<bool>();
+        }
+
         private Game(bool host, Id id, User user, JsonRequestHandler jsonRequestHandler)
         {
             this.host = host;
