@@ -123,24 +123,22 @@ namespace Library
         {
             get
             {
-                string request = string.Format("/game/{0}/vote/", id.Hash);
+                string request = string.Format("/game/{0}/user/", id.Hash);
                 var json = jsonReq.Request(request, RequestMethods.GET);
 
-                var jvotes = json["votes"] as JArray;
+                var jvotes = json["users"] as JArray;
                 Vote[] votes = new Vote[jvotes.Count];
                 for (int i = 0; i < jvotes.Count; i++)
                 {
-                    string username = jvotes[i]["name"].Value<string>();
+                    string username = jvotes[i]["Name"].Value<string>();
 
-                    var voted = jvotes[i]["voted"];
-                    var vote = jvotes[i]["vote"];
+                    var voted = jvotes[i]["Voted"].Value<bool>();
+                    var vote = jvotes[i]["Vote"];
 
-                    if (voted != null)
-                        votes[i] = new Library.Vote(username, voted.Value<bool>());
-                    else if (vote != null)
+                    if (voted)
                         votes[i] = new Library.Vote(username, VoteTypesExtension.Parse(vote.Value<string>()));
                     else
-                        throw new InvalidOperationException("Invalid vote state.");
+                        votes[i] = new Library.Vote(username, voted);
                 }
 
                 return votes;
