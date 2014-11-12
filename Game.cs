@@ -157,8 +157,8 @@ namespace Library
             if (!Host)
                 throw new InvalidOperationException("Only the host can clear votes.");
 
-            string request = string.Format("/game/{0}/vote/", id.Hash);
-            jsonReq.Request(request, RequestMethods.DELETE, new JObject(new JProperty("userid", user.Id.Hash)));
+            string request = string.Format("/game/{0}/user/", id.Hash);
+            jsonReq.Request(request, RequestMethods.PUT, new JObject(new JProperty("userid", user.Id.Hash)));
         }
 
         public void ResetGame()
