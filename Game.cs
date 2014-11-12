@@ -92,11 +92,25 @@ namespace Library
                     throw new ArgumentNullException("value");
 
                 string request = string.Format("/game/{0}/description/", id.Hash);
+                jsonReq.Request(request, RequestMethods.POST, new JObject(new JProperty("description", value), new JProperty("userid", user.Id.Hash)));
+            }
+        }
 
-                if (value == string.Empty)
-                    jsonReq.Request(request, RequestMethods.DELETE, new JObject(new JProperty("userid", user.Id.Hash)));
-                else
-                    jsonReq.Request(request, RequestMethods.POST, new JObject(new JProperty("description", value), new JProperty("userid", user.Id.Hash)));
+        public string Title
+        {
+            get
+            {
+                string request = string.Format("/game/{0}/title/", id.Hash);
+                var json = jsonReq.Request(request, RequestMethods.GET);
+                return json["title"].Value<string>();
+            }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("value");
+
+                string request = string.Format("/game/{0}/title/", id.Hash);
+                jsonReq.Request(request, RequestMethods.POST, new JObject(new JProperty("title", value), new JProperty("userid", user.Id.Hash)));
             }
         }
 
