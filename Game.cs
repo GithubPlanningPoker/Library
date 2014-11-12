@@ -117,9 +117,16 @@ namespace Library
                 for (int i = 0; i < jvotes.Count; i++)
                 {
                     string username = jvotes[i]["name"].Value<string>();
-                    string voteStr = jvotes[i]["vote"].Value<string>();
 
-                    votes[i] = new Vote(username, VoteTypesExtension.Parse(voteStr));
+                    var voted = jvotes[i]["voted"];
+                    var vote = jvotes[i]["vote"];
+
+                    if (voted != null)
+                        votes[i] = new Library.Vote(username, voted.Value<bool>());
+                    else if (vote != null)
+                        votes[i] = new Library.Vote(username, VoteTypesExtension.Parse(vote.Value<string>()));
+                    else
+                        throw new InvalidOperationException("Invalid vote state.");
                 }
 
                 return votes;

@@ -49,10 +49,10 @@ namespace Library
             }
         }
 
-        public static VoteTypes? Parse(string input)
+        public static VoteTypes Parse(string input)
         {
             if (input == null)
-                return null;
+                throw new ArgumentNullException("input");
 
             switch (input)
             {
