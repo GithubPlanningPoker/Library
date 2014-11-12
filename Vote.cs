@@ -30,7 +30,7 @@ namespace Library
         {
             get { return name; }
         }
-        public VoteTypes? VoteType
+        public VoteTypes VoteType
         {
             get { return votetype; }
         }
