@@ -148,8 +148,8 @@ namespace Library
         }
         public void Vote(VoteTypes voteType)
         {
-            string request = string.Format("/game/{0}/vote/{1}/", id.Hash, user.Id.Hash);
-            jsonReq.Request(request, RequestMethods.POST, new JObject(new JProperty("vote", voteType.ToAPIString())));
+            string request = string.Format("/game/{0}/user/{1}/", id.Hash, user.Name);
+            jsonReq.Request(request, RequestMethods.POST, new JObject(new JProperty("vote", voteType.ToAPIString()), new JProperty("userid", user.Id.Hash)));
         }
 
         public void ClearVotes()
