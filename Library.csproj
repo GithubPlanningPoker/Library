@@ -33,8 +33,12 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>JSON\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Octokit">
+      <HintPath>..\packages\Octokit.0.5.2\lib\net45\Octokit.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -43,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Game.cs" />
+    <Compile Include="GithubIssues.cs" />
     <Compile Include="Id.cs" />
     <Compile Include="JsonRequestHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -50,6 +55,9 @@
     <Compile Include="User.cs" />
     <Compile Include="Vote.cs" />
     <Compile Include="VoteTypes.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
