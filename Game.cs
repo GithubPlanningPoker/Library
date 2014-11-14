@@ -127,17 +127,18 @@ namespace Library
 
                 var jvotes = json["users"] as JArray;
                 Vote[] votes = new Vote[jvotes.Count];
+
+                bool allVoted = jvotes.All(node => node["Voted"].Value<bool>());
+
                 for (int i = 0; i < jvotes.Count; i++)
                 {
                     string username = jvotes[i]["Name"].Value<string>();
-
-                    var voted = jvotes[i]["Voted"].Value<bool>();
                     var vote = jvotes[i]["Vote"];
 
-                    if (voted)
+                    if (allVoted)
                         votes[i] = new Library.Vote(username, VoteTypesExtension.Parse(vote.Value<string>()));
                     else
-                        votes[i] = new Library.Vote(username, voted);
+                        votes[i] = new Library.Vote(username, jvotes[i]["Voted"].Value<bool>());
                 }
 
                 return votes;
