@@ -162,6 +162,7 @@ namespace Library
         public void ResetGame()
         {
             Description = "";
+            Title = "";
             ClearVotes();
         }
     }
