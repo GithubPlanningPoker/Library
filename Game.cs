@@ -155,6 +155,21 @@ namespace Library
         }
 
         /// <summary>
+        /// Checks if the vote is valid (a vote is invalid if any vote is not cast, infinite, break or ?)
+        /// </summary>
+        /// <returns></returns>
+        public bool VoteValid()
+        {
+            
+
+            if (Votes.Any(x => x.VoteType == VoteTypes.Break || x.VoteType == VoteTypes.Infinite || x.VoteType == VoteTypes.QuestionMark || x.HasVoted == false ))
+            {
+                return false;
+            }
+            else return true;
+        }
+
+        /// <summary>
         /// Estimates a result for the vote
         /// </summary>
         /// <returns></returns>
