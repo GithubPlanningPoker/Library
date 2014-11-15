@@ -124,7 +124,7 @@ namespace Library
 
         public void Kick(string username)
         {
-            string request = string.Format("/game/[gameid]/user/[username]/", id.Hash, username);
+            string request = string.Format("/game/{0}/user/{1}/", id.Hash, username);
             jsonReq.Request(request, RequestMethods.DELETE, new JObject(new JProperty(userIdString, user.Id.Hash)));
         }
         public Vote[] Votes
