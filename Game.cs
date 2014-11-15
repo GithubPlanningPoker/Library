@@ -45,7 +45,7 @@ namespace Library
             string request = string.Format("/game/{0}/", gameid.Hash);
             var json = handler.Request(request, RequestMethods.GET, true);
 
-            return json["success"].Value<bool>();
+            return json != null;
         }
 
         private Game(bool host, Id id, User user, JsonRequestHandler jsonRequestHandler)
