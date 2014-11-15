@@ -33,7 +33,7 @@ namespace Library
 
             string request = string.Format("/game/{0}/user/", gameid.Hash);
             var json = handler.Request(request, RequestMethods.POST, new JObject(new JProperty("username", username)));
-            User user = new User(username, new Id(json["userid"].Value<string>()));
+            User user = new User(username, new Id(json["userId"].Value<string>()));
 
             return new Game(false, gameid, user, handler);
         }
