@@ -41,7 +41,7 @@ namespace Library
             JsonRequestHandler handler = new JsonRequestHandler(domainURL);
 
             string request = string.Format("/game/{0}/user/", gameid.Hash);
-            var json = handler.Request(request, RequestMethods.POST, new JObject(new JProperty(username, username)));
+            var json = handler.Request(request, RequestMethods.POST, new JObject(new JProperty(usernameString, username)));
             User user = new User(username, new Id(json[userIdString].Value<string>()));
 
             return new Game(false, gameid, user, handler);
@@ -152,6 +152,32 @@ namespace Library
 
                 return votes;
             }
+        }
+
+        /// <summary>
+        /// Checks if the vote is valid (a vote is invalid if any vote is not cast, infinite, break or ?)
+        /// </summary>
+        /// <returns></returns>
+        public bool VoteValid()
+        {
+            
+
+            if (Votes.Any(x => x.VoteType == VoteTypes.Break || x.VoteType == VoteTypes.Infinite || x.VoteType == VoteTypes.QuestionMark || x.HasVoted == false ))
+            {
+                return false;
+            }
+            else return true;
+        }
+
+        /// <summary>
+        /// Estimates a result for the vote
+        /// </summary>
+        /// <returns></returns>
+        public int VoteResultEstimate()
+        {
+            double average = Votes.Average(x => x.VoteType.ToDouble());
+
+            return (int)Math.Round(average, 0, MidpointRounding.ToEven);
         }
         public void Vote(VoteTypes voteType)
         {
