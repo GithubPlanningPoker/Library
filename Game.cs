@@ -41,7 +41,7 @@ namespace Library
             JsonRequestHandler handler = new JsonRequestHandler(domainURL);
 
             string request = string.Format("/game/{0}/user/", gameid.Hash);
-            var json = handler.Request(request, RequestMethods.POST, new JObject(new JProperty(username, username)));
+            var json = handler.Request(request, RequestMethods.POST, new JObject(new JProperty(usernameString, username)));
             User user = new User(username, new Id(json[userIdString].Value<string>()));
 
             return new Game(false, gameid, user, handler);
