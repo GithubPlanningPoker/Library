@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net;
+using System.IO;
 
 namespace Library
 {
@@ -23,20 +25,10 @@ namespace Library
         public JObject Request(string url, RequestMethods method, string data, bool ignoreError = false)
         {
             byte[] response = getReponse(rootURL + url, method, data);
-            var json = JObject.Parse(Encoding.UTF8.GetString(response));
 
-            JToken successObj = json["success"] as JValue;
-            if (successObj == null)
-                throw new ApplicationException("No success property in returned json.");
-
-            if (!ignoreError)
-            {
-                var success = successObj.Value<bool>();
-                if (!success)
-                    throw new ApplicationException("Request error: " + json["message"]);
-            }
-
-            return json;
+            if (response.Length != 0)
+                return JObject.Parse(Encoding.UTF8.GetString(response));
+            else return null;
         }
         public JObject Request(string url, RequestMethods method, bool ignoreError = false)
         {
@@ -60,23 +52,49 @@ namespace Library
             byte[] buffer = data == null ? new byte[0] : Encoding.UTF8.GetBytes(data);
             byte[] responseBuffer = new byte[0];
 
-            using (var client = new System.Net.WebClient())
+            HttpWebRequest client = System.Net.HttpWebRequest.CreateHttp(url);
+            switch (method)
             {
-                switch (method)
-                {
-                    case RequestMethods.GET:
-                        responseBuffer = client.DownloadData(url);
-                        break;
+                case RequestMethods.GET:
+                    responseBuffer = HandleWebResponse(client);
+                    break;
 
-                    case RequestMethods.PUT:
-                    case RequestMethods.POST:
-                    case RequestMethods.DELETE:
-                        client.Headers.Add("Content-Type", "application/json");
-                        responseBuffer = client.UploadData(url, getMethodString(method), buffer);
-                        break;
-                }
+                case RequestMethods.PUT:
+                case RequestMethods.POST:
+                case RequestMethods.DELETE:
+                    client.ContentType = "application/json";
+                    client.Method = getMethodString(method);
+
+                    var g = client.GetRequestStream();
+                    //ByteWriter datastream = new StreamWriter( g);
+                    g.Write(buffer, 0, buffer.Length);
+
+                    HttpWebResponse response = client.GetResponse() as HttpWebResponse;
+
+                    responseBuffer = HandleWebResponse(client);
+
+                    break;
             }
 
+            return responseBuffer;
+        }
+
+        private static byte[] HandleWebResponse(HttpWebRequest client)
+        {
+            byte[] responseBuffer = new byte[0];
+            HttpWebResponse r = client.GetResponse() as HttpWebResponse;
+            var g = r.StatusCode;
+
+            if (g == HttpStatusCode.OK || g == HttpStatusCode.Created)
+            {
+                MemoryStream ms = new MemoryStream();
+                r.GetResponseStream().CopyTo(ms);
+                responseBuffer = ms.ToArray();
+            }
+            else
+            {
+                throw new WebException((r as HttpWebResponse).StatusDescription);
+            }
             return responseBuffer;
         }
     }

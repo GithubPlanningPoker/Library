@@ -19,10 +19,10 @@ namespace Library
         {
             JsonRequestHandler handler = new JsonRequestHandler(domainURL);
 
-            var json = handler.Request("/game/", RequestMethods.POST, new JObject(new JProperty("name", username)));
+            var json = handler.Request("/game/", RequestMethods.POST, new JObject(new JProperty("username", username)));
 
-            Id gameid = new Id(json["gameid"].Value<string>());
-            User user = new User(username, new Id(json["userid"].Value<string>()));
+            Id gameid = new Id(json["gameId"].Value<string>());
+            User user = new User(username, new Id(json["userId"].Value<string>()));
 
             return new Game(true, gameid, user, handler);
         }
@@ -128,17 +128,17 @@ namespace Library
                 var jvotes = json["users"] as JArray;
                 Vote[] votes = new Vote[jvotes.Count];
 
-                bool allVoted = jvotes.All(node => node["Voted"].Value<bool>());
+                bool allVoted = jvotes.All(node => node["voted"].Value<bool>());
 
                 for (int i = 0; i < jvotes.Count; i++)
                 {
-                    string username = jvotes[i]["Name"].Value<string>();
-                    var vote = jvotes[i]["Vote"];
+                    string username = jvotes[i]["username"].Value<string>();
+                    var vote = jvotes[i]["vote"];
 
                     if (allVoted)
                         votes[i] = new Library.Vote(username, VoteTypesExtension.Parse(vote.Value<string>()));
                     else
-                        votes[i] = new Library.Vote(username, jvotes[i]["Voted"].Value<bool>());
+                        votes[i] = new Library.Vote(username, jvotes[i]["voted"].Value<bool>());
                 }
 
                 return votes;
