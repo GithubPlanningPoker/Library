@@ -153,6 +153,17 @@ namespace Library
                 return votes;
             }
         }
+
+        /// <summary>
+        /// Estimates a result for the vote
+        /// </summary>
+        /// <returns></returns>
+        public int VoteResultEstimate()
+        {
+            double average = Votes.Average(x => x.VoteType.ToDouble());
+
+            return (int)Math.Round(average, 0, MidpointRounding.ToEven);
+        }
         public void Vote(VoteTypes voteType)
         {
             string request = string.Format("/game/{0}/user/{1}/", id.Hash, user.Name);
