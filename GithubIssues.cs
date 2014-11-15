@@ -27,7 +27,7 @@ namespace Library
             github.Credentials = new Credentials(token);
         }
 
-        public async Task<Issue> PostIssue(string title, string content, string username, string repo)
+        public void PostIssue(string title, string content, string username, string repo)
         {
             if (github.Credentials.AuthenticationType == AuthenticationType.Anonymous)
                 throw new Octokit.AuthorizationException();
