@@ -27,7 +27,7 @@ namespace Library
             github.Credentials = new Credentials(token);
         }
 
-        public void PostIssue(string title, string content, string username, string repo)
+        public async void PostIssue(string title, string content, string username, string repo)
         {
             if (github.Credentials.AuthenticationType == AuthenticationType.Anonymous)
                 throw new Octokit.AuthorizationException();
@@ -35,7 +35,7 @@ namespace Library
             var issuesclient = github.Issue;
             var repository = await github.Repository.Get(username, repo);
             NewIssue n = new NewIssue(title) { Body = content };
-            return await issuesclient.Create(repository.Owner.Login, repository.Name, n);
+            await issuesclient.Create(repository.Owner.Login, repository.Name, n);
         }
     }
 }
