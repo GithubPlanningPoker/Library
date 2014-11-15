@@ -24,11 +24,12 @@ namespace Library
         }
         public JObject Request(string url, RequestMethods method, string data, bool ignoreError = false)
         {
-            byte[] response = getReponse(rootURL + url, method, data);
+            byte[] response = getReponse(rootURL + url, method, data, ignoreError);
 
-            if (response.Length != 0)
+            if (response != null && response.Length > 0)
                 return JObject.Parse(Encoding.UTF8.GetString(response));
-            else return null;
+            else
+                return null;
         }
         public JObject Request(string url, RequestMethods method, bool ignoreError = false)
         {
@@ -47,7 +48,7 @@ namespace Library
                     throw new ArgumentException("Unknown request method.");
             }
         }
-        private byte[] getReponse(string url, RequestMethods method, string data)
+        private byte[] getReponse(string url, RequestMethods method, string data, bool ignoreError)
         {
             byte[] buffer = data == null ? new byte[0] : Encoding.UTF8.GetBytes(data);
             byte[] responseBuffer = new byte[0];
@@ -56,7 +57,7 @@ namespace Library
             switch (method)
             {
                 case RequestMethods.GET:
-                    responseBuffer = HandleWebResponse(client);
+                    responseBuffer = HandleWebResponse(client, ignoreError);
                     break;
 
                 case RequestMethods.PUT:
@@ -71,7 +72,7 @@ namespace Library
 
                     HttpWebResponse response = client.GetResponse() as HttpWebResponse;
 
-                    responseBuffer = HandleWebResponse(client);
+                    responseBuffer = HandleWebResponse(client, ignoreError);
 
                     break;
             }
@@ -79,22 +80,35 @@ namespace Library
             return responseBuffer;
         }
 
-        private static byte[] HandleWebResponse(HttpWebRequest client)
+        private static byte[] HandleWebResponse(HttpWebRequest client, bool ignoreError)
         {
             byte[] responseBuffer = new byte[0];
-            HttpWebResponse r = client.GetResponse() as HttpWebResponse;
-            var g = r.StatusCode;
+            HttpWebResponse response = null;
+            try
+            {
+                response = client.GetResponse() as HttpWebResponse;
+            }
+            catch (WebException e)
+            {
+                if (ignoreError)
+                    return null;
+                else
+                    throw e;
+            }
+            var g = response.StatusCode;
 
             if (g == HttpStatusCode.OK || g == HttpStatusCode.Created)
             {
                 MemoryStream ms = new MemoryStream();
-                r.GetResponseStream().CopyTo(ms);
+                response.GetResponseStream().CopyTo(ms);
                 responseBuffer = ms.ToArray();
             }
             else
             {
-                throw new WebException((r as HttpWebResponse).StatusDescription);
+                throw new WebException((response as HttpWebResponse).StatusDescription);
             }
+            response.Dispose();
+
             return responseBuffer;
         }
     }
