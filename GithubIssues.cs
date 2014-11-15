@@ -27,6 +27,12 @@ namespace Library
             github.Credentials = new Credentials(token);
         }
 
+        public IEnumerable<Repository> GetRepositories(string user)
+        {
+            var rep = github.Repository.GetAllForUser(user);
+            return rep.Result;
+        }
+
         public async void PostIssue(string title, string content, string username, string repo)
         {
             if (github.Credentials.AuthenticationType == AuthenticationType.Anonymous)
