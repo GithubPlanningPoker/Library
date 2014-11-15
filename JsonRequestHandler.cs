@@ -66,7 +66,6 @@ namespace Library
                     client.Method = getMethodString(method);
 
                     var g = client.GetRequestStream();
-                    //ByteWriter datastream = new StreamWriter( g);
                     g.Write(buffer, 0, buffer.Length);
 
                     HttpWebResponse response = client.GetResponse() as HttpWebResponse;
