@@ -49,6 +49,30 @@ namespace Library
             }
         }
 
+        public static double ToDouble(this VoteTypes voteType)
+        {
+            switch (voteType)
+            {
+                case VoteTypes.Zero: return 0;
+                case VoteTypes.Half: return 0.5;
+                case VoteTypes.One: return 1;
+                case VoteTypes.Two: return 2;
+                case VoteTypes.Three: return 3;
+                case VoteTypes.Five: return 5;
+                case VoteTypes.Eight: return 8;
+                case VoteTypes.Thirteen: return 13;
+                case VoteTypes.Twenty: return 20;
+                case VoteTypes.Fourty: return 40;
+                case VoteTypes.OneHundred: return 100;
+                case VoteTypes.Infinite:
+                case VoteTypes.QuestionMark: 
+                case VoteTypes.Break:
+                    throw new InvalidOperationException("Cannot convert vote to a double");
+                default:
+                    throw new ArgumentException("Unknown vote type.");
+            }
+        }
+
         public static VoteTypes Parse(string input)
         {
             if (input == null)
