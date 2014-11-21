@@ -64,5 +64,12 @@ namespace Library
             return true;
         }
 
+        public bool CanPublishToRepo(string name, string repository)
+        {
+            var g = github.Repository.Get(name, repository).Result;
+            var h = g.Permissions;
+            return h.Admin;
+        }
+
     }
 }
