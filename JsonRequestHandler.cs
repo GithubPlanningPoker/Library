@@ -67,9 +67,18 @@ namespace Library
                     client.Method = getMethodString(method);
 
                     var g = client.GetRequestStream();
+
                     g.Write(buffer, 0, buffer.Length);
 
-                    HttpWebResponse response = client.GetResponse() as HttpWebResponse;
+                    try
+                    {
+                        HttpWebResponse response = client.GetResponse() as HttpWebResponse;
+                    }
+                    catch (WebException e)
+                    {
+                        var resp = new StreamReader(e.Response.GetResponseStream()).ReadToEnd();
+                        throw new WebException(resp, e);
+                    }
 
                     responseBuffer = HandleWebResponse(client, ignoreError);
 
