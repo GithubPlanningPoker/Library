@@ -71,5 +71,15 @@ namespace Library
             return h.Admin;
         }
 
+        public IEnumerable<string> UserRepos(string name)
+        {
+            var repos = github.Repository.GetAllForUser(name).Result;
+
+            foreach (var repo in repos)
+            {
+                yield return repo.Name;
+            }
+        }
+
     }
 }
