@@ -8,10 +8,10 @@ using Octokit;
 namespace Library
 {
 
-    public class GithubIssues
+    public class Github
     {
         GitHubClient github;
-        public GithubIssues()
+        public Github()
         {
             github = new GitHubClient(new ProductHeaderValue("GithubPlanningPoker"));
 
@@ -37,5 +37,49 @@ namespace Library
             NewIssue n = new NewIssue(title) { Body = content };
             await issuesclient.Create(repository.Owner.Login, repository.Name, n);
         }
+
+        public bool UserExists(string name)
+        {
+            try
+            {
+                var g = github.User.Get(name).Result;
+            }
+            catch (AggregateException e)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool RepoExists(string name, string repository)
+        {
+            try
+            {
+                var g = github.Repository.Get(name, repository).Result;
+            }
+            catch (AggregateException e)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool CanPublishToRepo(string name, string repository)
+        {
+            var g = github.Repository.Get(name, repository).Result;
+            var h = g.Permissions;
+            return h.Admin;
+        }
+
+        public IEnumerable<string> UserRepos(string name)
+        {
+            var repos = github.Repository.GetAllForUser(name).Result;
+
+            foreach (var repo in repos)
+            {
+                yield return repo.Name;
+            }
+        }
+
     }
 }
