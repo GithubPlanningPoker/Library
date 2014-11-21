@@ -8,10 +8,10 @@ using Octokit;
 namespace Library
 {
 
-    public class GithubIssues
+    public class Github
     {
         GitHubClient github;
-        public GithubIssues()
+        public Github()
         {
             github = new GitHubClient(new ProductHeaderValue("GithubPlanningPoker"));
 
