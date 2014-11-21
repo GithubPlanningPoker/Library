@@ -57,6 +57,27 @@ namespace Library
             return json != null;
         }
 
+        public static string[] GetUsers(string domainURL, Id gameid)
+        {
+            JsonRequestHandler jsonReq = new JsonRequestHandler(domainURL);
+
+            string request = string.Format("/game/{0}/user/", gameid.Hash);
+            var json = jsonReq.Request(request, RequestMethods.GET);
+
+            var jvotes = json[usersString] as JArray;
+            string[] users = new string[jvotes.Count];
+
+            for (int i = 0; i < jvotes.Count; i++)
+                users[i] = jvotes[i][usernameString].Value<string>();
+
+            return users;
+        }
+
+        public static bool HasUser(string domainURL, Id gameid, string username)
+        {
+            return GetUsers(domainURL, gameid).Contains(username);
+        }
+
         private Game(bool host, Id id, User user, JsonRequestHandler jsonRequestHandler)
         {
             this.host = host;
