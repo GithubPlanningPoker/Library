@@ -51,5 +51,18 @@ namespace Library
             return true;
         }
 
+        public bool RepoExists(string name, string repository)
+        {
+            try
+            {
+                var g = github.Repository.Get(name, repository).Result;
+            }
+            catch (AggregateException e)
+            {
+                return false;
+            }
+            return true;
+        }
+
     }
 }
