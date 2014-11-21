@@ -148,6 +148,11 @@ namespace Library
             string request = string.Format("/game/{0}/user/{1}/", id.Hash, username);
             jsonReq.Request(request, RequestMethods.DELETE, new JObject(new JProperty(userIdString, user.Id.Hash)));
         }
+        public void Leave()
+        {
+            Kick(user.Name);
+        }
+
         public Vote[] Votes
         {
             get
