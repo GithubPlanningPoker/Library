@@ -37,5 +37,19 @@ namespace Library
             NewIssue n = new NewIssue(title) { Body = content };
             await issuesclient.Create(repository.Owner.Login, repository.Name, n);
         }
+
+        public bool UserExists(string name)
+        {
+            try
+            {
+                var g = github.User.Get(name).Result;
+            }
+            catch (AggregateException e)
+            {
+                return false;
+            }
+            return true;
+        }
+
     }
 }
